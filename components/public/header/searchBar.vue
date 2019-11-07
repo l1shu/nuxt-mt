@@ -15,7 +15,7 @@
           <button class="el-button el-button--primary"><i class="el-icon-search"/></button>
           <dl v-if="isHotPlace" class="hotPlace">
             <dt>热门搜索</dt>
-            <dd v-for="(item, idx) in hotPlace" :key="idx">
+            <dd v-for="(item, idx) in $store.state.home.hotPlace.slice(0, 4)" :key="idx">
               <a :href="'/products?keyword='+encodeURIComponent(item.name)">{{ item.name }}</a>
             </dd>
           </dl>
@@ -26,11 +26,11 @@
           </dl>
         </div>
         <p class="suggest">
-          <a href="">广州长隆欢乐世界</a>
-          <a href="">肯德基</a>
-          <a href="">FUN范影城</a>
-          <a href="">广州长隆野生动物世界</a>
-          <a href="">金逸珠江国际影城</a>
+          <a
+            v-for="(item,idx) in $store.state.home.hotPlace.slice(0, 4)"
+            :key="idx"
+            :href="'/products?keyword='+encodeURIComponent(item.name)"
+          >{{ item.name }}</a>
         </p>
         <ul class="nav">
           <li><nuxt-link
@@ -69,28 +69,8 @@ export default {
     return {
       search: '',
       isFocus: false,
-      hotPlace: [
-        {
-          name: '火锅'
-        },
-        {
-          name: '火锅'
-        },
-        {
-          name: '火锅'
-        }
-      ],
-      searchList: [
-        {
-          name: '广州长隆欢乐世界'
-        },
-        {
-          name: '广州长隆欢乐世界'
-        },
-        {
-          name: '广州长隆欢乐世界'
-        }
-      ]
+      hotPlace: [],
+      searchList: []
     }
   },
   computed:{
@@ -98,21 +78,35 @@ export default {
       return this.isFocus && !this.search
     },
     isSearchList () {
-      return this.isFocus && this.search
+      return this.isFocus && !!this.search
     }
   },
   methods:{
     focus () {
-      this.isFocus=true
+      this.isFocus = true
     },
     blur () {
-      setTimeout(() => {
-        this.isFocus=false
-      },200)
+      setTimeout(() => { // 立即失焦会导致点击内容无效
+        this.isFocus = false
+      }, 200)
     },
-    input () {
+    input: _.debounce(async function () {
+      let city = this.$store.state.geo.position.city.replace('市', '')
+      this.searchList = []
+      if (!this.search) {
+        return
+      }
 
-    }
+      let { data: { data, ret } } = await this.$axios.get('/search/top', {
+        params: {
+          input: this.search,
+          city
+        }
+      })
+      if (ret == 0) {
+        this.searchList = data.top.slice(0, 10)
+      }
+    }, 300)
   }
 }
 </script>

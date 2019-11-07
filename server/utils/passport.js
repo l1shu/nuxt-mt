@@ -18,13 +18,11 @@ passport.use(new LocalStrategy(async (username, password, done) => {
 
 // 序列化,在调用 ctx.login() 时会触发序列化操作。
 passport.serializeUser((user, done) => {
-  console.log('serializeUser: ', user.username)
   done(null, user)
 })
 
 // 反序列化，随后得请求时，session中存在"passport":{"user":"xxx"}触发
 passport.deserializeUser((user, done) => {
-  console.log('deserializeUser: ', user.username)
   done(null, user)
 })
 

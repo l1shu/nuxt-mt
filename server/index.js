@@ -11,6 +11,8 @@ const passport = require('./utils/passport')
 
 // 引入路由
 const users = require('./routes/users')
+const geo = require('./routes/geo')
+const search = require('./routes/search')
 
 const app = new Koa()
 
@@ -66,6 +68,8 @@ async function start () {
 
   // routes
   app.use(users.routes()).use(users.allowedMethods())
+  app.use(geo.routes()).use(geo.allowedMethods())
+  app.use(search.routes()).use(search.allowedMethods())
 
   app.use((ctx) => {
     ctx.status = 200

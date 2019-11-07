@@ -43,31 +43,11 @@ export default {
   },
   computed: {
     cur () {
-      return this.list[this.kind];
+      return this.list[this.kind]
     }
   },
-  async mounted() {
-    // let self=this;
-    // let {status,data:{count,pois}}=await self.$axios.get('/search/resultsByKeywords',{
-    //   params:{
-    //     keyword:'景点',
-    //     city:self.$store.state.geo.position.city
-    //   }
-    // })
-    // if(status===200&&count>0){
-    //   let r= pois.filter(item=>item.photos.length).map(item=>{
-    //     return {
-    //       title:item.name,
-    //       pos:item.type.split(';')[0],
-    //       price:item.biz_ext.cost||'暂无',
-    //       img:item.photos[0].url,
-    //       url:'//abc.com'
-    //     }
-    //   })
-    //   self.list[self.kind]=r.slice(0,9)
-    // }else{
-    //   self.list[self.kind]=[]
-    // }
+  async mounted () {
+    this.getResultsByKeyword('景点')
   },
   methods: {
     async over (e) {
@@ -75,6 +55,36 @@ export default {
       if (dom.tagName.toLowerCase() === "dd") {
         this.kind = dom.getAttribute("kind")
         let keyword = dom.getAttribute("keyword")
+
+        if (this.list[this.kind].length == 0) {
+          this.getResultsByKeyword(keyword)
+        }
+      }
+    },
+    async getResultsByKeyword (keyword) {
+      let { status, data } = await this.$axios.get('/search/resultsByKeywords', {
+        params: {
+          keyword,
+          city: this.$store.state.geo.position.city
+        }
+      })
+      if (status == 200 && data.ret == 0) {
+        let { count, pois } = data.data
+        let r = pois
+          .filter(item => item.photos.length)
+          .map(item => {
+            return {
+              title: item.name,
+              pos: item.type.split(';')[0],
+              price: Array.isArray(item.biz_ext.cost) ? ( item.biz_ext.cost[0] || '暂无' ) : ( item.biz_ext.cost || '暂无' ),
+              img: item.photos[0].url,
+              url: ''
+            }
+          })
+        
+        this.list[this.kind] = r.slice(0, 9)
+      } else {
+        this.list[this.kind] = []
       }
     }
   }
