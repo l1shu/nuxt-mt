@@ -55,6 +55,7 @@
 </template>
 
 <script>
+import CryptoJS from 'crypto-js'
 export default {
   layout: 'blank',
   data() {
@@ -106,11 +107,60 @@ export default {
     }
   },
   methods: {
-    sendMsg () {
+    async sendMsg () {
+      if (this.timer) {
+        return false
+      }
 
+      let namePass
+      let emailPass
+      this.$refs.ruleForm && this.$refs.ruleForm.validateField('name', errMsg => {
+        namePass = !errMsg
+      })
+      this.$refs.ruleForm && this.$refs.ruleForm.validateField('email', errMsg => {
+        emailPass = !errMsg
+      })
+      if (!namePass || !emailPass) {
+        return false
+      }
+
+      let { status, data } = await this.$axios.post('/users/verify', {
+        username: encodeURIComponent(this.ruleForm.name),
+        email: this.ruleForm.email
+      })
+      if (status == 200 && data && data.ret == 0) {
+        let count = 60
+        this.statusMsg = `验证码已发送,剩余${count--}秒`
+        this.timer = setInterval(() => {
+          this.statusMsg = `验证码已发送,剩余${count--}秒`
+          if (count == 0) {
+            clearInterval(this.timer)
+          }
+        }, 1000);
+      } else {
+        this.statusMsg = data.msg
+      }
     },
-    register () {
-
+    async register () {
+      this.$refs.ruleForm && this.$refs.ruleForm.validate(async valid => {
+        if (!valid) {
+          return false
+        }
+        let { status, data } = await this.$axios.post('/users/signup', {
+          username: encodeURIComponent(this.ruleForm.name),
+          password: CryptoJS.MD5(this.ruleForm.pwd).toString(),
+          email: this.ruleForm.email,
+          code: this.ruleForm.code
+        })
+        if (status == 200 && data && data.ret == 0) {
+          location.href = '/login'
+        } else {
+          this.error = data.msg
+          setTimeout(() => {
+            this.error = ''
+          }, 1500)
+        }
+      })
     }
   }
 }

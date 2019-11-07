@@ -1,20 +1,25 @@
 # nuxt-mt
 
-> My geometric Nuxt.js project
-
-## Build Setup
-
-``` bash
-# install dependencies
-$ npm run install
-
-# serve with hot reload at localhost:3000
-$ npm run dev
-
-# build for production and launch server
-$ npm run build
-$ npm run start
-
-# generate static project
-$ npm run generate
-```
+## nuxt 流程图
+Incoming Request
+      |
+      |
+nuxtServerInit
+(store action)
+      |
+      |
+  middleware  <—————————————————————
+1. nuxt.config.js                   |
+2. matching layout                  |
+3. matching page & children         |
+      |                             |
+      |                             |
+  validate()                     Navigate
+(pages & chidlren)              <nuxt-link>
+      |                             |
+      |                             |
+asyncData() & fetch()               |
+(pages & chidlren)                  |
+      |                             |
+      |                             |
+    Render —————————————————————————

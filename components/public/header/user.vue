@@ -1,7 +1,7 @@
 <template>
   <div class="m-user">
     <template v-if="user">
-      欢迎您，<span class="username">{{ user }}</span>
+      欢迎您，<span class="username">{{ user.username }}</span>
       [<nuxt-link to="/exit">退出</nuxt-link>]
     </template>
     <template v-else>
@@ -18,11 +18,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
-  data(){
-    return {
-      user:''
-    }
-  },
+  computed: mapState(['user'])
 }
 </script>

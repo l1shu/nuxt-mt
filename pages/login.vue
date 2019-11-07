@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import CryptoJS from 'crypto-js'
 export default {
   layout: 'blank',
   data: () => {
@@ -44,8 +45,16 @@ export default {
     }
   },
   methods: {
-    login () {
-      
+    async login () {
+      let { data } = await this.$axios.post('/users/signin', {
+        username: encodeURIComponent(this.username),
+        password: CryptoJS.MD5(this.password).toString()
+      })
+      if (data && data.ret == 0) {
+        location.href = '/'
+      } else {
+        this.error = data.msg
+      }
     }
   }
 }
