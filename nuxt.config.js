@@ -13,7 +13,10 @@ module.exports = {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+    ],
+    script: [
+      { src: 'https://webapi.amap.com/maps?v=1.4.15&key=f8a14a2e5b2a66fd05f86a541a28b03f' }
+    ],
   },
   /*
   ** Customize the progress-bar color
