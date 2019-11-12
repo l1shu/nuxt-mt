@@ -13,6 +13,7 @@ const passport = require('./utils/passport')
 const users = require('./routes/users')
 const geo = require('./routes/geo')
 const search = require('./routes/search')
+const cart = require('./routes/cart')
 
 const app = new Koa()
 
@@ -70,6 +71,7 @@ async function start () {
   app.use(users.routes()).use(users.allowedMethods())
   app.use(geo.routes()).use(geo.allowedMethods())
   app.use(search.routes()).use(search.allowedMethods())
+  app.use(cart.routes()).use(cart.allowedMethods())
 
   app.use((ctx) => {
     ctx.status = 200

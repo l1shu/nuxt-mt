@@ -51,11 +51,11 @@ router.get('/products', async (ctx) => {
     params: { city, keyword }
   })
   
-  ctx.body = new SuccessModel({
+  ctx.body = {
     product: status === 200 ? product : [],
     more: ctx.isAuthenticated() ? more: [],
     login: ctx.isAuthenticated()
-  })
+  }
 })
 
 module.exports = router
